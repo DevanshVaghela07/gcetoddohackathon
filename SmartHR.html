@@ -1,0 +1,1414 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Smart HR Merged</title>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    :root{
+      --bg1:#1a1a2e; --bg2:#16213e; --bg3:#0f3460;
+      --glass: rgba(255,255,255,0.10);
+      --glass2: rgba(0,0,0,0.30);
+      --border: rgba(255,255,255,0.18);
+      --accent:#a678ff;
+      --link:#80bfff;
+      --ok:#28a745;
+      --warn:#ffc107;
+      --bad:#dc3545;
+      --pri:#2575fc;
+    }
+    *{ margin:0; padding:0; box-sizing:border-box; font-family:Poppins,sans-serif; }
+    body{
+      min-height:100vh;
+      color:#fff;
+      background: linear-gradient(135deg,var(--bg1),var(--bg2),var(--bg3));
+      overflow-x:hidden;
+    }
+    .wrap{ max-width:1200px; margin:0 auto; padding:18px; }
+
+    .topbar{
+      position:sticky; top:0; z-index:50;
+      background: rgba(0,0,0,0.35);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--border);
+    }
+    .topbar-inner{
+      max-width:1200px; margin:0 auto; padding:14px 18px;
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .brand{ display:flex; align-items:center; gap:10px; }
+    .brand i{ color:var(--accent); font-size:1.2rem; }
+    .brand h2{ font-size:1.05rem; font-weight:600; letter-spacing:0.2px; }
+
+    .actions{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; justify-content:flex-end; }
+    .pill{
+      padding:8px 10px; border-radius:999px;
+      background: rgba(255,255,255,0.10);
+      border:1px solid var(--border);
+      font-size:0.9rem;
+      white-space:nowrap;
+    }
+    .btn{
+      border:none; cursor:pointer;
+      padding:9px 12px;
+      border-radius:10px;
+      color:#fff;
+      transition:0.2s ease;
+      display:inline-flex; align-items:center; gap:8px;
+      background: rgba(255,255,255,0.12);
+      border:1px solid var(--border);
+    }
+    .btn:hover{ transform: translateY(-1px); }
+    .btn-primary{ background: linear-gradient(90deg, #6a11cb, var(--pri)); border:none; }
+    .btn-danger{ background: linear-gradient(90deg, #ff416c, var(--bad)); border:none; }
+    .btn-success{ background: rgba(40,167,69,0.9); border:none; }
+    .btn-ghost{ background: rgba(255,255,255,0.10); }
+    .btndisabled, .btn:disabled{ opacity:0.6; cursor:not-allowed; transform:none; }
+
+    .grid{
+      display:grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap:16px;
+      margin-top:16px;
+    }
+    @media(max-width: 980px){ .grid{ grid-template-columns:1fr; } }
+
+    .panel{
+      background: var(--glass);
+      border:1px solid var(--border);
+      border-radius:16px;
+      backdrop-filter: blur(12px);
+      overflow:hidden;
+    }
+    .panel-h{
+      padding:14px 14px;
+      background: var(--glass2);
+      border-bottom:1px solid var(--border);
+      display:flex; align-items:center; justify-content:space-between; gap:12px;
+    }
+    .panel-h h3{ font-size:1rem; font-weight:600; }
+    .panel-b{ padding:14px; }
+
+    .cards{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap:12px;
+    }
+    @media(max-width: 980px){ .cards{ grid-template-columns:1fr; } }
+    .card{
+      padding:14px;
+      border-radius:14px;
+      border:1px solid var(--border);
+      background: rgba(255,255,255,0.08);
+      cursor:pointer;
+      transition:0.2s ease;
+      min-height:92px;
+      display:flex; align-items:center; gap:12px;
+    }
+    .card:hover{ transform: translateY(-2px); }
+    .card i{ font-size:1.6rem; color:var(--accent); width:32px; text-align:center; }
+    .card h4{ font-size:0.98rem; margin-bottom:2px; }
+    .card p{ font-size:0.85rem; color:rgba(255,255,255,0.8); }
+
+    table{ width:100%; border-collapse:collapse; }
+    th,td{ padding:10px 10px; text-align:left; border-bottom:1px solid rgba(255,255,255,0.15); vertical-align:top; }
+    th{ background: rgba(0,0,0,0.25); font-weight:600; }
+    .tag{
+      display:inline-block; padding:4px 8px; border-radius:999px;
+      font-size:0.8rem; border:1px solid var(--border);
+      background: rgba(255,255,255,0.10);
+      white-space:nowrap;
+    }
+    .tag-ok{ background: rgba(40,167,69,0.25); }
+    .tag-warn{ background: rgba(255,193,7,0.25); }
+    .tag-bad{ background: rgba(220,53,69,0.25); }
+
+    .form-row{ display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    @media(max-width: 620px){ .form-row{ grid-template-columns:1fr; } }
+    label{ display:block; font-size:0.85rem; margin-bottom:6px; color:rgba(255,255,255,0.85); }
+    input, select, textarea{
+      width:100%;
+      padding:10px 10px;
+      border-radius:10px;
+      border:1px solid rgba(255,255,255,0.18);
+      outline:none;
+      background: rgba(0,0,0,0.25);
+      color:#fff;
+    }
+    
+
+  /* Payroll input spacing (Admin Payroll Management modal) */
+  .payroll-wrap{
+    overflow: auto;
+    max-width: 100%;
+  }
+  .payroll-table{
+    min-width: 900px;
+  }
+  .payroll-input{
+    min-width: 150px;
+  }
+  .payroll-note{
+    min-width: 240px;
+  }
+textarea{ min-height:78px; resize:vertical; }
+    .hint{ font-size:0.85rem; color:rgba(255,255,255,0.75); margin-top:8px; }
+    .error{ display:none; margin-top:10px; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.2); background: rgba(220,53,69,0.22); }
+    .ok{ display:none; margin-top:10px; padding:10px; border-radius:10px; border:1px solid rgba(255,255,255,0.2); background: rgba(40,167,69,0.18); }
+    .link{ color:var(--link); cursor:pointer; text-decoration:none; }
+    .link:hover{ text-decoration:underline; }
+
+    .view{ display:none; }
+    .view.active{ display:block; }
+
+    .row{ display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; }
+    .muted{ color: rgba(255,255,255,0.80); font-size:0.9rem; }
+
+    .emp-header-left{
+      display:flex;
+      align-items:center;
+      gap:8px;
+    }
+    .avatar-btn{
+      width:32px;
+      height:32px;
+      border-radius:50%;
+      border:2px solid var(--border);
+      background: rgba(255,255,255,0.12);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      cursor:pointer;
+      overflow:hidden;
+    }
+    .avatar-btn img{
+      width:100%; height:100%; object-fit:cover;
+    }
+  </style>
+</head>
+
+<body>
+  <div class="topbar">
+    <div class="topbar-inner">
+      <div class="brand">
+        <i class="fa-solid fa-layer-group"></i>
+        <h2>Smart HR</h2>
+      </div>
+
+      <div class="actions">
+        <span id="who" class="pill" style="display:none;"></span>
+        <button id="adminBtn" class="btn btn-ghost" style="display:none;">
+          <i class="fa-solid fa-user-shield"></i> Admin Panel
+        </button>
+        <button id="logoutBtn" class="btn btn-danger" style="display:none;">
+          <i class="fa-solid fa-right-from-bracket"></i> Logout
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div class="wrap">
+
+    <!-- AUTH VIEW -->
+    <section id="authView" class="view active">
+      <div class="grid">
+        <div class="panel">
+          <div class="panel-h">
+            <h3><i class="fa-solid fa-lock"></i> Login</h3>
+            <span class="muted">Choose Employee or Admin</span>
+          </div>
+          <div class="panel-b">
+            <div class="form-row">
+              <div>
+                <label>Email</label>
+                <input id="loginEmail" type="email" placeholder="Enter email" autocomplete="email">
+              </div>
+              <div>
+                <label>Password</label>
+                <input id="loginPassword" type="password" placeholder="Enter password" autocomplete="current-password">
+              </div>
+            </div>
+            <div style="margin-top:12px;" class="row">
+              <button id="loginEmpBtn" class="btn btn-primary">
+                <i class="fa-solid fa-user"></i> Login as Employee
+              </button>
+              <button id="loginAdminBtn" class="btn btn-success">
+                <i class="fa-solid fa-user-shield"></i> Login as Admin
+              </button>
+              <span class="muted">New user? <a class="link" id="showRegister">Create account</a></span>
+            </div>
+            <div id="loginErr" class="error"></div>
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">
+            <h3><i class="fa-solid fa-circle-info"></i> Demo Admin</h3>
+            <span class="muted">Auto-created</span>
+          </div>
+          <div class="panel-b">
+            <p class="muted">Admin account is created automatically on first run.</p>
+            <p class="hint">Email: <span class="tag">admin@dayflow.local</span></p>
+            <p class="hint">Password: <span class="tag">Admin@123</span></p>
+            <p class="hint">Use “Login as Admin” button.</p>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" id="registerPanel" style="margin-top:16px; display:none;">
+        <div class="panel-h">
+          <h3><i class="fa-solid fa-user-plus"></i> Register</h3>
+          <span class="muted">Company + Personal details</span>
+        </div>
+        <div class="panel-b">
+          <div class="form-row">
+            <div>
+              <label>Company name</label>
+              <input id="regCompany" type="text" placeholder="Company Name">
+            </div>
+            <div>
+              <label>Name</label>
+              <input id="regName" type="text" placeholder="Your Name">
+            </div>
+            <div>
+              <label>Email</label>
+              <input id="regEmail" type="email" placeholder="name@example.com">
+            </div>
+            <div>
+              <label>Phone</label>
+              <input id="regPhone" type="tel" placeholder="10-digit phone">
+            </div>
+            <div>
+              <label>Password</label>
+              <input id="regPass" type="password" placeholder="Create password">
+            </div>
+            <div>
+              <label>Confirm password</label>
+              <input id="regPass2" type="password" placeholder="Confirm password">
+            </div>
+          </div>
+          <div style="margin-top:12px;" class="row">
+            <button id="registerBtn" class="btn btn-success"><i class="fa-solid fa-check"></i> Sign Up</button>
+            <span class="muted">Already have an account? <a class="link" id="hideRegister">Back to login</a></span>
+          </div>
+          <div id="regErr" class="error"></div>
+          <div id="regOk" class="ok"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- EMPLOYEE VIEW -->
+    <section id="employeeView" class="view">
+      <div class="grid">
+        <div class="panel">
+          <div class="panel-h">
+            <div class="emp-header-left">
+              <div id="empProfilePageBtn" class="avatar-btn" title="Open profile page">
+                <i class="fa-solid fa-user"></i>
+              </div>
+              <h3><i class="fa-solid fa-gauge"></i> Employee Dashboard</h3>
+            </div>
+            <span id="empAlert" class="tag tag-warn">Alerts: 0</span>
+          </div>
+          <div class="panel-b">
+            <div class="cards">
+              <div class="card" id="openProfile">
+                <i class="fa-solid fa-id-card"></i>
+                <div>
+                  <h4>Profile (quick)</h4>
+                  <p>View your details in popup</p>
+                </div>
+              </div>
+              <div class="card" id="openAttendance">
+                <i class="fa-solid fa-clock"></i>
+                <div>
+                  <h4>Attendance</h4>
+                  <p>Check-in / Check-out</p>
+                </div>
+              </div>
+              <div class="card" id="openLeave">
+                <i class="fa-solid fa-calendar-days"></i>
+                <div>
+                  <h4>Leave Request</h4>
+                  <p>Submit leave for approval</p>
+                </div>
+              </div>
+              <!-- NEW Employee Payroll card (read-only) -->
+              <div class="card" id="openPayrollEmp">
+                <i class="fa-solid fa-money-bill-wave"></i>
+                <div>
+                  <h4>Payroll</h4>
+                  <p>View salary (read-only)</p>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:12px;" class="panel">
+              <div class="panel-h">
+                <h3><i class="fa-solid fa-list-check"></i> Recent Attendance (Last 7)</h3>
+                <span class="muted">Auto-saved</span>
+              </div>
+              <div class="panel-b" style="padding:0;">
+                <table>
+                  <thead>
+                    <tr><th>Date</th><th>Check-in</th><th>Check-out</th><th>Status</th></tr>
+                  </thead>
+                  <tbody id="empAttTbody"></tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">
+            <h3><i class="fa-solid fa-bell"></i> Activity</h3>
+            <span class="muted">Updates</span>
+          </div>
+          <div class="panel-b">
+            <div id="empActivity" class="hint">No activity yet.</div>
+            <div style="margin-top:12px;" class="hint">
+              Leave requests are approved only when Admin approves.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ADMIN VIEW -->
+    <section id="adminView" class="view">
+      <div class="grid">
+        <div class="panel">
+          <div class="panel-h">
+            <h3><i class="fa-solid fa-user-shield"></i> Admin Dashboard</h3>
+            <span id="pendingCount" class="tag tag-warn">Pending leaves: 0</span>
+          </div>
+
+          <div class="panel-b">
+            <div class="cards" style="grid-template-columns: repeat(3, minmax(0, 1fr));">
+              <div class="card" id="refreshAdmin">
+                <i class="fa-solid fa-arrows-rotate"></i>
+                <div>
+                  <h4>Refresh</h4>
+                  <p>Reload latest data</p>
+                </div>
+              </div>
+              <div class="card" id="openAdminAttendance">
+                <i class="fa-solid fa-users"></i>
+                <div>
+                  <h4>Attendance Records</h4>
+                  <p>All employees</p>
+                </div>
+              </div>
+              <!-- NEW Admin Payroll card -->
+              <div class="card" id="openAdminPayroll">
+                <i class="fa-solid fa-coins"></i>
+                <div>
+                  <h4>Payroll Management</h4>
+                  <p>View & update salary</p>
+                </div>
+              </div>
+            </div>
+
+            <div style="margin-top:12px;" class="panel">
+              <div class="panel-h">
+                <h3><i class="fa-solid fa-user-group"></i> Registered Employees</h3>
+                <span class="muted">Includes last login</span>
+              </div>
+              <div class="panel-b" style="padding:0;">
+                <table>
+                  <thead>
+                    <tr><th>Name</th><th>Email</th><th>Company</th><th>Last login</th></tr>
+                  </thead>
+                  <tbody id="usersTbody"></tbody>
+                </table>
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <div class="panel">
+          <div class="panel-h">
+            <h3><i class="fa-solid fa-clipboard-check"></i> Leave Approvals</h3>
+            <span class="muted">Admin only</span>
+          </div>
+          <div class="panel-b">
+            <div id="leaveBox" class="hint">No pending leave requests.</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel" style="margin-top:16px;">
+        <div class="panel-h">
+          <h3><i class="fa-solid fa-table"></i> Attendance Table</h3>
+          <span class="muted">Filter by employee</span>
+        </div>
+        <div class="panel-b">
+          <div class="row" style="margin-bottom:10px;">
+            <div style="min-width:260px; flex:1;">
+              <label>Employee</label>
+              <select id="attEmployeeFilter"></select>
+            </div>
+            <div>
+              <button class="btn btn-primary" id="applyFilterBtn"><i class="fa-solid fa-filter"></i> Apply</button>
+              <button class="btn btn-ghost" id="clearFilterBtn"><i class="fa-solid fa-xmark"></i> Clear</button>
+            </div>
+          </div>
+
+          <div class="panel" style="overflow:hidden;">
+            <div class="panel-b" style="padding:0;">
+              <table>
+                <thead>
+                  <tr><th>Employee</th><th>Date</th><th>Check-in</th><th>Check-out</th><th>Status</th></tr>
+                </thead>
+                <tbody id="adminAttTbody"></tbody>
+              </table>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- PROFILE PAGE VIEW -->
+    <section id="profilePageView" class="view">
+      <div class="panel">
+        <div class="panel-h">
+          <h3><i class="fa-solid fa-user"></i> Employee Profile</h3>
+          <button id="backToEmp" class="btn btn-ghost">
+            <i class="fa-solid fa-arrow-left"></i> Back to dashboard
+          </button>
+        </div>
+        <div class="panel-b">
+          <div class="form-row">
+            <div>
+              <label>Profile picture</label>
+              <div style="display:flex; align-items:center; gap:10px;">
+                <div class="avatar-btn" style="width:64px; height:64px;" id="profilePicPreviewWrap">
+                  <img id="profilePicPreview" alt="Profile" style="display:none;">
+                  <i id="profilePicIcon" class="fa-solid fa-user"></i>
+                </div>
+                <input type="file" id="profilePicInput" accept="image/*">
+              </div>
+              <div class="hint">Choose from gallery; stored in browser only.</div>
+            </div>
+            <div>
+              <label>Full name</label>
+              <input id="pf_name" type="text">
+            </div>
+            <div>
+              <label>Email (read-only)</label>
+              <input id="pf_email" type="email" disabled>
+            </div>
+            <div>
+              <label>Phone (editable)</label>
+              <input id="pf_phone" type="tel">
+            </div>
+          </div>
+
+          <hr style="margin:14px 0; border-color:rgba(255,255,255,0.2);">
+
+          <div class="form-row">
+            <div>
+              <label>Company</label>
+              <input id="pf_company" type="text" disabled>
+            </div>
+            <div>
+              <label>Job Title</label>
+              <input id="pf_jobTitle" type="text">
+            </div>
+            <div>
+              <label>Department</label>
+              <input id="pf_department" type="text">
+            </div>
+            <div>
+              <label>Location</label>
+              <input id="pf_location" type="text">
+            </div>
+          </div>
+
+          <hr style="margin:14px 0; border-color:rgba(255,255,255,0.2);">
+
+          <div class="form-row">
+            <div>
+              <label>Base salary (₹)</label>
+              <input id="pf_salaryBase" type="number" min="0" step="1000">
+            </div>
+            <div>
+              <label>Allowances (₹)</label>
+              <input id="pf_salaryAllowance" type="number" min="0" step="1000">
+            </div>
+            <div>
+              <label>Bonus (₹)</label>
+              <input id="pf_salaryBonus" type="number" min="0" step="1000">
+            </div>
+            <div>
+              <label>Salary note</label>
+              <input id="pf_salaryNote" type="text" placeholder="CTC / remarks">
+            </div>
+          </div>
+
+          <hr style="margin:14px 0; border-color:rgba(255,255,255,0.2);">
+
+          <div class="form-row">
+            <div>
+              <label>Address (editable)</label>
+              <textarea id="pf_address" placeholder="Full postal address"></textarea>
+            </div>
+            <div>
+              <label>Documents (links / IDs)</label>
+              <textarea id="pf_documents" placeholder="Document names, IDs or URLs"></textarea>
+            </div>
+          </div>
+
+          <div style="margin-top:14px;" class="row">
+            <button id="saveProfileBtn" class="btn btn-success">
+              <i class="fa-solid fa-floppy-disk"></i> Save profile
+            </button>
+            <span class="hint">Employee can edit address, phone, profile picture, job details, salary note & documents. Admin can edit everything if needed (future).</span>
+          </div>
+
+          <div id="pfMsg" class="ok"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- MODAL (single modal reused) -->
+    <div id="modal" class="view" style="display:none; position:fixed; inset:0; background:rgba(0,0,0,0.75); z-index:100;">
+      <div style="max-width:980px; margin:6% auto; padding:14px;" class="wrap">
+        <div class="panel">
+          <div class="panel-h">
+            <h3 id="modalTitle">Modal</h3>
+            <button class="btn btn-ghost" id="modalClose"><i class="fa-solid fa-xmark"></i> Close</button>
+          </div>
+          <div class="panel-b" id="modalBody"></div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+<script>
+const K = {
+  USERS: "dayflowUsers",
+  SESSION: "dayflowSession",
+  ATT: "dayflowAttendance",
+  LEAVES: "dayflowLeaves"
+};
+
+function safeParse(json, fallback){
+  try { return JSON.parse(json); } catch(e){ return fallback; }
+}
+function getStore(key, fallback){
+  const raw = localStorage.getItem(key);
+  if (raw === null || raw === undefined || raw === "") return fallback;
+  return safeParse(raw, fallback);
+}
+function setStore(key, value){
+  localStorage.setItem(key, JSON.stringify(value));
+}
+function nowISO(){ return new Date().toISOString(); }
+function todayYMD(){ return new Date().toISOString().split("T")[0]; }
+function pad2(n){ return String(n).padStart(2,"0"); }
+function timeHM(){
+  const d = new Date();
+  return `${pad2(d.getHours())}:${pad2(d.getMinutes())}`;
+}
+
+function ensureSeedAdmin(){
+  const users = getStore(K.USERS, []);
+  const hasAdmin = users.some(u => u.role === "admin");
+  if (!hasAdmin){
+    users.push({
+      id: Date.now(),
+      role: "admin",
+      companyName: "Dayflow",
+      name: "System Admin",
+      email: "admin@dayflow.local",
+      phone: "0000000000",
+      password: "Admin@123",
+      createdAt: nowISO(),
+      lastLoginAt: null
+    });
+    setStore(K.USERS, users);
+  }
+}
+
+function getUsers(){ return getStore(K.USERS, []); }
+function saveUsers(users){ setStore(K.USERS, users); }
+function getSession(){ return getStore(K.SESSION, null); }
+function setSession(email){ setStore(K.SESSION, { email }); }
+function clearSession(){ localStorage.removeItem(K.SESSION); }
+
+function getAttendance(){ return getStore(K.ATT, []); }
+function saveAttendance(rows){ setStore(K.ATT, rows); }
+
+function getLeaves(){ return getStore(K.LEAVES, []); }
+function saveLeaves(rows){ setStore(K.LEAVES, rows); }
+
+function findUser(email){
+  const users = getUsers();
+  return users.find(u => u.email.toLowerCase() === String(email||"").toLowerCase()) || null;
+}
+function requireUser(){
+  const s = getSession();
+  if (!s || !s.email) return null;
+  return findUser(s.email);
+}
+
+const authView = document.getElementById("authView");
+const employeeView = document.getElementById("employeeView");
+const adminView = document.getElementById("adminView");
+const profilePageView = document.getElementById("profilePageView");
+
+const who = document.getElementById("who");
+const logoutBtn = document.getElementById("logoutBtn");
+const adminBtn = document.getElementById("adminBtn");
+
+const registerPanel = document.getElementById("registerPanel");
+const showRegister = document.getElementById("showRegister");
+const hideRegister = document.getElementById("hideRegister");
+
+const loginErr = document.getElementById("loginErr");
+const regErr = document.getElementById("regErr");
+const regOk = document.getElementById("regOk");
+
+function show(viewEl){
+  [authView, employeeView, adminView, profilePageView].forEach(v => v.classList.remove("active"));
+  viewEl.classList.add("active");
+}
+
+function setTopbarForUser(user){
+  if (!user){
+    who.style.display = "none";
+    logoutBtn.style.display = "none";
+    adminBtn.style.display = "none";
+    return;
+  }
+  who.style.display = "inline-flex";
+  who.textContent = `${user.name} (${String(user.role).toUpperCase()})`;
+  logoutBtn.style.display = "inline-flex";
+  adminBtn.style.display = (user.role === "admin") ? "inline-flex" : "none";
+}
+
+function showError(el, msg){
+  el.style.display = "block";
+  el.textContent = msg;
+}
+function clearError(el){
+  el.style.display = "none";
+  el.textContent = "";
+}
+function showOk(el, msg){
+  el.style.display = "block";
+  el.textContent = msg;
+}
+
+const modal = document.getElementById("modal");
+const modalTitle = document.getElementById("modalTitle");
+const modalBody = document.getElementById("modalBody");
+document.getElementById("modalClose").onclick = () => { modal.style.display = "none"; };
+modal.addEventListener("click", (e) => { if (e.target === modal) modal.style.display = "none"; });
+
+function openModal(title, html){
+  modalTitle.textContent = title;
+  modalBody.innerHTML = html;
+  modal.style.display = "block";
+}
+
+showRegister.onclick = () => { registerPanel.style.display = "block"; };
+hideRegister.onclick = () => { registerPanel.style.display = "none"; };
+
+document.getElementById("registerBtn").onclick = () => {
+  clearError(regErr); regOk.style.display = "none";
+
+  const companyName = document.getElementById("regCompany").value.trim();
+  const name = document.getElementById("regName").value.trim();
+  const email = document.getElementById("regEmail").value.trim().toLowerCase();
+  const phone = document.getElementById("regPhone").value.trim();
+  const pass = document.getElementById("regPass").value;
+  const pass2 = document.getElementById("regPass2").value;
+
+  if (!companyName || !name || !email || !phone || !pass || !pass2){
+    return showError(regErr, "Please fill all fields.");
+  }
+  if (pass !== pass2){
+    return showError(regErr, "Password and Confirm Password do not match.");
+  }
+  if (!/^\d{10}$/.test(phone)){
+    return showError(regErr, "Phone must be exactly 10 digits.");
+  }
+
+  const users = getUsers();
+  if (users.some(u => u.email.toLowerCase() === email)){
+    return showError(regErr, "This email is already registered. Please login.");
+  }
+
+  users.push({
+    id: Date.now(),
+    role: "employee",
+    companyName,
+    name,
+    email,
+    phone,
+    password: pass,
+    createdAt: nowISO(),
+    lastLoginAt: null,
+    profile: {}
+  });
+  saveUsers(users);
+
+  showOk(regOk, "Registration successful. Now login with your email/password.");
+  registerPanel.style.display = "none";
+};
+
+document.getElementById("loginEmpBtn").onclick = () => attemptLogin("employee");
+document.getElementById("loginAdminBtn").onclick = () => attemptLogin("admin");
+
+function attemptLogin(targetRole){
+  clearError(loginErr);
+
+  const email = document.getElementById("loginEmail").value.trim().toLowerCase();
+  const pass = document.getElementById("loginPassword").value;
+
+  if (!email || !pass) return showError(loginErr, "Enter email and password.");
+
+  const user = findUser(email);
+  if (!user) return showError(loginErr, "User not found. Please register first.");
+  if (user.password !== pass) return showError(loginErr, "Invalid password.");
+
+  if (targetRole === "admin" && user.role !== "admin"){
+    return showError(loginErr, "This account is not an Admin account. Use 'Login as Employee'.");
+  }
+  if (targetRole === "employee" && user.role !== "employee"){
+    return showError(loginErr, "This account is Admin. Use 'Login as Admin'.");
+  }
+
+  const users = getUsers();
+  const idx = users.findIndex(u => u.email.toLowerCase() === email);
+  if (idx >= 0){ users[idx].lastLoginAt = nowISO(); saveUsers(users); }
+
+  setSession(email);
+
+  if (targetRole === "admin"){
+    location.hash = "admin";
+  } else {
+    history.replaceState(null, "", location.pathname + location.search);
+  }
+  routeAfterLogin();
+}
+
+logoutBtn.onclick = () => {
+  clearSession();
+  setTopbarForUser(null);
+  registerPanel.style.display = "none";
+  show(authView);
+};
+
+adminBtn.onclick = () => {
+  const user = requireUser();
+  if (!user) return;
+  if (user.role !== "admin") return;
+  location.hash = "admin";
+  routeAfterLogin();
+};
+
+function routeAfterLogin(){
+  const user = requireUser();
+  if (!user){
+    show(authView);
+    setTopbarForUser(null);
+    return;
+  }
+  setTopbarForUser(user);
+
+  const wantsAdmin = (location.hash || "").toLowerCase() === "#admin";
+  if (wantsAdmin){
+    if (user.role !== "admin"){
+      history.replaceState(null, "", location.pathname + location.search);
+      show(employeeView);
+      renderEmployee();
+      return;
+    }
+    show(adminView);
+    renderAdmin();
+  } else {
+    show(employeeView);
+    renderEmployee();
+  }
+}
+
+/* Employee dashboard */
+const empAttTbody = document.getElementById("empAttTbody");
+const empActivity = document.getElementById("empActivity");
+const empAlert = document.getElementById("empAlert");
+
+document.getElementById("openProfile").onclick = () => {
+  const u = requireUser(); if (!u) return;
+  openModal("Profile", `
+    <div class="row">
+      <span class="tag">Company</span><span class="muted">${escapeHTML(u.companyName)}</span>
+    </div><br>
+    <div class="row">
+      <span class="tag">Name</span><span class="muted">${escapeHTML(u.name)}</span>
+    </div><br>
+    <div class="row">
+      <span class="tag">Email</span><span class="muted">${escapeHTML(u.email)}</span>
+    </div><br>
+    <div class="row">
+      <span class="tag">Phone</span><span class="muted">${escapeHTML(u.phone)}</span>
+    </div>
+  `);
+};
+
+document.getElementById("openAttendance").onclick = () => {
+  const u = requireUser(); if (!u) return;
+
+  const att = getAttendance();
+  const today = todayYMD();
+  const rec = att.find(r => r.email === u.email && r.date === today) || null;
+  const canCheckIn = !rec || !rec.checkIn;
+  const canCheckOut = rec && rec.checkIn && !rec.checkOut;
+
+  openModal("Attendance", `
+    <div class="row">
+      <span class="tag">Today</span>
+      <span class="muted">${today}</span>
+    </div>
+    <div style="margin-top:10px;" class="row">
+      <button class="btn btn-success" ${canCheckIn ? "" : "disabled"} onclick="empCheckIn()">
+        <i class="fa-solid fa-right-to-bracket"></i> Check In
+      </button>
+      <button class="btn btn-primary" ${canCheckOut ? "" : "disabled"} onclick="empCheckOut()">
+        <i class="fa-solid fa-right-from-bracket"></i> Check Out
+      </button>
+    </div>
+    <div class="hint" style="margin-top:10px;">
+      Check-in once per day, then check-out.
+    </div>
+    <div class="hint" style="margin-top:6px;">
+      Current: ${rec ? escapeHTML(rec.status) : "Not checked-in"}
+    </div>
+  `);
+};
+
+document.getElementById("openLeave").onclick = () => {
+  openModal("Apply Leave", `
+    <div class="form-row">
+      <div>
+        <label>Leave type</label>
+        <select id="lvType">
+          <option>Paid</option>
+          <option>Sick</option>
+          <option>Unpaid</option>
+        </select>
+      </div>
+      <div>
+        <label>Start date</label>
+        <input id="lvStart" type="date">
+      </div>
+      <div>
+        <label>End date</label>
+        <input id="lvEnd" type="date">
+      </div>
+      <div>
+        <label>Remarks</label>
+        <input id="lvRemarks" type="text" placeholder="Optional remarks">
+      </div>
+    </div>
+    <div style="margin-top:12px;" class="row">
+      <button class="btn btn-success" onclick="empApplyLeave()">
+        <i class="fa-solid fa-paper-plane"></i> Submit
+      </button>
+      <span class="muted">Request will be pending until Admin approves.</span>
+    </div>
+    <div id="lvMsg" class="ok"></div>
+    <div id="lvErr" class="error"></div>
+  `);
+};
+
+/* NEW: Employee payroll (read-only) */
+document.getElementById("openPayrollEmp").onclick = () => {
+  const u = requireUser(); if (!u) return;
+  const p = u.profile || {};
+  const base = Number(p.salaryBase || 0);
+  const alw = Number(p.salaryAllowance || 0);
+  const bonus = Number(p.salaryBonus || 0);
+  const total = base + alw + bonus;
+  openModal("Payroll (Read-only)", `
+    <div class="hint">Payroll is read-only for employees.</div>
+    <div class="payroll-wrap"><table class="payroll-table" style="margin-top:10px;">
+      <tr><th>Base salary</th><td>₹ ${base || 0}</td></tr>
+      <tr><th>Allowances</th><td>₹ ${alw || 0}</td></tr>
+      <tr><th>Bonus</th><td>₹ ${bonus || 0}</td></tr>
+      <tr><th>Total</th><td><span class="tag tag-ok">₹ ${total || 0}</span></td></tr>
+      <tr><th>Note</th><td>${escapeHTML(p.salaryNote || "")}</td></tr>
+    </table></div>
+  `);
+};
+
+function renderEmployee(){
+  const u = requireUser(); if (!u) return;
+
+  const leaves = getLeaves().filter(l => l.email === u.email);
+  const pending = leaves.filter(l => l.status === "pending").length;
+  const rejected = leaves.filter(l => l.status === "rejected").length;
+
+  empAlert.textContent = `Alerts: ${pending + rejected}`;
+  empAlert.className = `tag ${ (pending + rejected) ? "tag-warn" : "tag-ok" }`;
+
+  const last = leaves[leaves.length - 1] || null;
+  if (!last){
+    empActivity.textContent = "No leave activity yet.";
+  } else {
+    empActivity.innerHTML = `
+      <div class="hint">
+        Latest leave: <span class="tag">${escapeHTML(last.type)}</span>
+        (${escapeHTML(last.startDate)} to ${escapeHTML(last.endDate)}) →
+        <span class="tag ${last.status === "approved" ? "tag-ok" : (last.status === "rejected" ? "tag-bad" : "tag-warn")}">
+          ${escapeHTML(last.status)}
+        </span>
+      </div>
+    `;
+  }
+
+  const att = getAttendance().filter(r => r.email === u.email);
+  const recent = att.slice().sort((a,b) => (a.date < b.date ? 1 : -1)).slice(0,7);
+
+  empAttTbody.innerHTML = "";
+  if (recent.length === 0){
+    empAttTbody.innerHTML = `<tr><td colspan="4" class="muted">No attendance yet. Use Attendance card to check-in.</td></tr>`;
+  } else {
+    for (const r of recent){
+      empAttTbody.innerHTML += `
+        <tr>
+          <td>${escapeHTML(r.date)}</td>
+          <td>${escapeHTML(r.checkIn || "-")}</td>
+          <td>${escapeHTML(r.checkOut || "-")}</td>
+          <td><span class="tag tag-ok">${escapeHTML(r.status)}</span></td>
+        </tr>
+      `;
+    }
+  }
+
+  const profile = (u.profile || {});
+  const avatarBtn = document.getElementById("empProfilePageBtn");
+  const icon = avatarBtn.querySelector("i");
+  let imgEl = avatarBtn.querySelector("img");
+  if (!imgEl){
+    imgEl = document.createElement("img");
+    avatarBtn.appendChild(imgEl);
+  }
+  if (profile.profilePic){
+    imgEl.src = profile.profilePic;
+    imgEl.style.display = "block";
+    if (icon) icon.style.display = "none";
+  } else {
+    if (icon) icon.style.display = "block";
+    imgEl.style.display = "none";
+  }
+}
+
+window.empCheckIn = function(){
+  const u = requireUser(); if (!u) return;
+  const att = getAttendance();
+  const today = todayYMD();
+  let rec = att.find(r => r.email === u.email && r.date === today);
+  if (!rec){
+    rec = { id: Date.now(), email: u.email, date: today, checkIn: null, checkOut: null, status: "Absent" };
+    att.push(rec);
+  }
+  if (rec.checkIn){
+    openModal("Attendance", `<div class="error" style="display:block;">Already checked in today.</div>`);
+    return;
+  }
+  rec.checkIn = timeHM();
+  rec.status = "Present";
+  saveAttendance(att);
+  modal.style.display = "none";
+  renderEmployee();
+};
+
+window.empCheckOut = function(){
+  const u = requireUser(); if (!u) return;
+  const att = getAttendance();
+  const today = todayYMD();
+  const rec = att.find(r => r.email === u.email && r.date === today);
+  if (!rec || !rec.checkIn){
+    openModal("Attendance", `<div class="error" style="display:block;">Check-in first.</div>`);
+    return;
+  }
+  if (rec.checkOut){
+    openModal("Attendance", `<div class="error" style="display:block;">Already checked out today.</div>`);
+    return;
+  }
+  rec.checkOut = timeHM();
+  saveAttendance(att);
+  modal.style.display = "none";
+  renderEmployee();
+};
+
+window.empApplyLeave = function(){
+  const u = requireUser(); if (!u) return;
+
+  const type = (document.getElementById("lvType")||{}).value || "Paid";
+  const startDate = (document.getElementById("lvStart")||{}).value || "";
+  const endDate = (document.getElementById("lvEnd")||{}).value || "";
+  const remarks = (document.getElementById("lvRemarks")||{}).value || "";
+
+  const lvMsg = document.getElementById("lvMsg");
+  const lvErr = document.getElementById("lvErr");
+  lvMsg.style.display = "none"; lvErr.style.display = "none";
+
+  if (!startDate || !endDate){
+    lvErr.style.display = "block";
+    lvErr.textContent = "Please select start date and end date.";
+    return;
+  }
+  if (endDate < startDate){
+    lvErr.style.display = "block";
+    lvErr.textContent = "End date cannot be earlier than start date.";
+    return;
+  }
+
+  const leaves = getLeaves();
+  leaves.push({
+    id: Date.now(),
+    email: u.email,
+    type,
+    startDate,
+    endDate,
+    remarks,
+    status: "pending",
+    adminComment: "",
+    createdAt: nowISO(),
+    decidedAt: null
+  });
+  saveLeaves(leaves);
+
+  lvMsg.style.display = "block";
+  lvMsg.textContent = "Leave submitted successfully (Pending Admin approval).";
+
+  setTimeout(() => { modal.style.display = "none"; renderEmployee(); }, 700);
+};
+
+/* Admin dashboard */
+const usersTbody = document.getElementById("usersTbody");
+const leaveBox = document.getElementById("leaveBox");
+const pendingCount = document.getElementById("pendingCount");
+const attEmployeeFilter = document.getElementById("attEmployeeFilter");
+const adminAttTbody = document.getElementById("adminAttTbody");
+
+document.getElementById("refreshAdmin").onclick = () => renderAdmin();
+document.getElementById("openAdminAttendance").onclick = () => {
+  window.scrollTo({ top: document.body.scrollHeight, behavior: "smooth" });
+};
+document.getElementById("applyFilterBtn").onclick = () => renderAdminAttendance(attEmployeeFilter.value);
+document.getElementById("clearFilterBtn").onclick = () => { attEmployeeFilter.value = "ALL"; renderAdminAttendance("ALL"); };
+
+function renderAdmin(){
+  const u = requireUser(); if (!u) return;
+  if (u.role !== "admin"){
+    show(employeeView);
+    renderEmployee();
+    return;
+  }
+
+  const users = getUsers().filter(x => x.role === "employee");
+  usersTbody.innerHTML = "";
+  if (users.length === 0){
+    usersTbody.innerHTML = `<tr><td colspan="4" class="muted">No employees registered yet.</td></tr>`;
+  } else {
+    for (const e of users){
+      usersTbody.innerHTML += `
+        <tr>
+          <td>${escapeHTML(e.name)}</td>
+          <td>${escapeHTML(e.email)}</td>
+          <td>${escapeHTML(e.companyName)}</td>
+          <td>${escapeHTML(e.lastLoginAt ? new Date(e.lastLoginAt).toLocaleString() : "Never")}</td>
+        </tr>
+      `;
+    }
+  }
+
+  const leaves = getLeaves();
+  const pending = leaves.filter(l => l.status === "pending");
+  pendingCount.textContent = `Pending leaves: ${pending.length}`;
+  pendingCount.className = `tag ${pending.length ? "tag-warn" : "tag-ok"}`;
+
+  if (pending.length === 0){
+    leaveBox.innerHTML = `<div class="hint">No pending leave requests.</div>`;
+  } else {
+    leaveBox.innerHTML = pending.map(l => `
+      <div class="panel" style="margin-bottom:10px;">
+        <div class="panel-h">
+          <h3 style="font-size:0.95rem;">
+            ${escapeHTML(l.email)} <span class="tag tag-warn">Pending</span>
+          </h3>
+          <span class="muted">${escapeHTML(l.type)}</span>
+        </div>
+        <div class="panel-b">
+          <div class="row">
+            <div class="muted">Dates: <span class="tag">${escapeHTML(l.startDate)}</span> to <span class="tag">${escapeHTML(l.endDate)}</span></div>
+          </div>
+          <div class="hint" style="margin-top:8px;">Remarks: ${escapeHTML(l.remarks || "-")}</div>
+          <div class="row" style="margin-top:10px;">
+            <input id="c_${l.id}" type="text" placeholder="Admin comment (optional)">
+            <button class="btn btn-success" onclick="adminDecideLeave(${l.id}, 'approved')">
+              <i class="fa-solid fa-check"></i> Approve
+            </button>
+            <button class="btn btn-danger" onclick="adminDecideLeave(${l.id}, 'rejected')">
+              <i class="fa-solid fa-xmark"></i> Reject
+            </button>
+          </div>
+        </div>
+      </div>
+    `).join("");
+  }
+
+  buildAttendanceFilter();
+  renderAdminAttendance("ALL");
+}
+
+/* NEW Admin payroll management button */
+document.getElementById("openAdminPayroll").onclick = () => {
+  const u = requireUser(); if (!u || u.role !== "admin") return;
+  const users = getUsers().filter(x => x.role === "employee");
+  if (users.length === 0){
+    openModal("Payroll Management", `<div class="hint">No employees available.</div>`);
+    return;
+  }
+  let rows = "";
+  users.forEach(e => {
+    const p = e.profile || {};
+    rows += `
+      <tr>
+        <td>${escapeHTML(e.name)}</td>
+        <td>${escapeHTML(e.email)}</td>
+        <td><input class="payroll-input" style="width:100%;" type="number" min="0" step="1000" value="${p.salaryBase || ""}" data-email="${escapeAttr(e.email)}" data-field="base"></td>
+        <td><input class="payroll-input" style="width:100%;" type="number" min="0" step="1000" value="${p.salaryAllowance || ""}" data-email="${escapeAttr(e.email)}" data-field="allowance"></td>
+        <td><input class="payroll-input" style="width:100%;" type="number" min="0" step="1000" value="${p.salaryBonus || ""}" data-email="${escapeAttr(e.email)}" data-field="bonus"></td>
+        <td><input class="payroll-note" style="width:100%;" type="text" value="${escapeHTML(p.salaryNote || "")}" data-email="${escapeAttr(e.email)}" data-field="note"></td>
+      </tr>
+    `;
+  });
+  openModal("Payroll Management", `
+    <div class="hint">Admin can view and edit salary structure here. Changes are saved to each profile.</div>
+    <div class="payroll-wrap"><table class="payroll-table" style="margin-top:10px;">
+      <thead>
+        <tr>
+          <th>Name</th><th>Email</th><th>Base (₹)</th><th>Allowances (₹)</th><th>Bonus (₹)</th><th>Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table></div>
+    <div style="margin-top:10px; text-align:right;">
+      <button class="btn btn-success" onclick="saveAdminPayroll()">
+        <i class="fa-solid fa-floppy-disk"></i> Save payroll changes
+      </button>
+    </div>
+  `);
+};
+
+function buildAttendanceFilter(){
+  const users = getUsers().filter(u => u.role === "employee");
+  attEmployeeFilter.innerHTML = `<option value="ALL">ALL Employees</option>` +
+    users.map(u => `<option value="${escapeAttr(u.email)}">${escapeHTML(u.email)}</option>`).join("");
+}
+
+function renderAdminAttendance(email){
+  const att = getAttendance().slice().sort((a,b) => (a.date < b.date ? 1 : -1));
+  const rows = (email && email !== "ALL") ? att.filter(r => r.email === email) : att;
+
+  adminAttTbody.innerHTML = "";
+  if (rows.length === 0){
+    adminAttTbody.innerHTML = `<tr><td colspan="5" class="muted">No attendance records.</td></tr>`;
+    return;
+  }
+  for (const r of rows){
+    adminAttTbody.innerHTML += `
+      <tr>
+        <td>${escapeHTML(r.email)}</td>
+        <td>${escapeHTML(r.date)}</td>
+        <td>${escapeHTML(r.checkIn || "-")}</td>
+        <td>${escapeHTML(r.checkOut || "-")}</td>
+        <td><span class="tag tag-ok">${escapeHTML(r.status)}</span></td>
+      </tr>
+    `;
+  }
+}
+
+window.adminDecideLeave = function(id, status){
+  const user = requireUser();
+  if (!user || user.role !== "admin") return;
+
+  const leaves = getLeaves();
+  const idx = leaves.findIndex(l => l.id === id);
+  if (idx < 0) return;
+
+  const commentEl = document.getElementById(`c_${id}`);
+  leaves[idx].status = status;
+  leaves[idx].adminComment = commentEl ? String(commentEl.value || "") : "";
+  leaves[idx].decidedAt = nowISO();
+  saveLeaves(leaves);
+
+  renderAdmin();
+};
+
+/* NEW: save payroll from admin modal */
+window.saveAdminPayroll = function(){
+  const user = requireUser();
+  if (!user || user.role !== "admin") return;
+
+  const users = getUsers();
+  const inputs = modalBody.querySelectorAll("input[data-email][data-field]");
+  inputs.forEach(inp => {
+    const email = inp.getAttribute("data-email");
+    const field = inp.getAttribute("data-field");
+    const idx = users.findIndex(u => u.email.toLowerCase() === String(email).toLowerCase());
+    if (idx < 0) return;
+    users[idx].profile = users[idx].profile || {};
+    if (field === "base") users[idx].profile.salaryBase = inp.value;
+    if (field === "allowance") users[idx].profile.salaryAllowance = inp.value;
+    if (field === "bonus") users[idx].profile.salaryBonus = inp.value;
+    if (field === "note") users[idx].profile.salaryNote = inp.value;
+  });
+  saveUsers(users);
+  openModal("Payroll Management", `<div class="ok" style="display:block;">Payroll updated successfully.</div>`);
+};
+
+/* Profile page logic */
+const empProfilePageBtn = document.getElementById("empProfilePageBtn");
+const backToEmp = document.getElementById("backToEmp");
+const pfMsg = document.getElementById("pfMsg");
+
+const pf_name = document.getElementById("pf_name");
+const pf_email = document.getElementById("pf_email");
+const pf_phone = document.getElementById("pf_phone");
+const pf_company = document.getElementById("pf_company");
+const pf_jobTitle = document.getElementById("pf_jobTitle");
+const pf_department = document.getElementById("pf_department");
+const pf_location = document.getElementById("pf_location");
+const pf_salaryBase = document.getElementById("pf_salaryBase");
+const pf_salaryAllowance = document.getElementById("pf_salaryAllowance");
+const pf_salaryBonus = document.getElementById("pf_salaryBonus");
+const pf_salaryNote = document.getElementById("pf_salaryNote");
+const pf_address = document.getElementById("pf_address");
+const pf_documents = document.getElementById("pf_documents");
+
+const profilePicInput = document.getElementById("profilePicInput");
+const profilePicPreview = document.getElementById("profilePicPreview");
+const profilePicIcon = document.getElementById("profilePicIcon");
+
+let profilePicDataURL = null;
+
+empProfilePageBtn.onclick = () => {
+  const u = requireUser(); if (!u) return;
+  loadProfileForm(u);
+  show(profilePageView);
+};
+
+backToEmp.onclick = () => {
+  show(employeeView);
+  renderEmployee();
+};
+
+function loadProfileForm(user){
+  pfMsg.style.display = "none";
+  pf_name.value = user.name || "";
+  pf_email.value = user.email || "";
+  pf_phone.value = user.phone || "";
+  pf_company.value = user.companyName || "";
+
+  const profile = user.profile || {};
+  pf_jobTitle.value = profile.jobTitle || "";
+  pf_department.value = profile.department || "";
+  pf_location.value = profile.location || "";
+  pf_salaryBase.value = profile.salaryBase || "";
+  pf_salaryAllowance.value = profile.salaryAllowance || "";
+  pf_salaryBonus.value = profile.salaryBonus || "";
+  pf_salaryNote.value = profile.salaryNote || "";
+  pf_address.value = profile.address || "";
+  pf_documents.value = profile.documents || "";
+
+  profilePicDataURL = profile.profilePic || null;
+  if (profilePicDataURL){
+    profilePicPreview.src = profilePicDataURL;
+    profilePicPreview.style.display = "block";
+    profilePicIcon.style.display = "none";
+  } else {
+    profilePicPreview.style.display = "none";
+    profilePicIcon.style.display = "block";
+  }
+}
+
+profilePicInput.addEventListener("change", (e) => {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(ev){
+    profilePicDataURL = ev.target.result;
+    profilePicPreview.src = profilePicDataURL;
+    profilePicPreview.style.display = "block";
+    profilePicIcon.style.display = "none";
+  };
+  reader.readAsDataURL(file);
+});
+
+document.getElementById("saveProfileBtn").onclick = () => {
+  const u = requireUser(); if (!u) return;
+  const users = getUsers();
+  const idx = users.findIndex(x => x.email.toLowerCase() === u.email.toLowerCase());
+  if (idx < 0) return;
+
+  users[idx].name = pf_name.value.trim();
+  users[idx].phone = pf_phone.value.trim();
+
+  users[idx].profile = users[idx].profile || {};
+  users[idx].profile.jobTitle = pf_jobTitle.value.trim();
+  users[idx].profile.department = pf_department.value.trim();
+  users[idx].profile.location = pf_location.value.trim();
+  users[idx].profile.salaryBase = pf_salaryBase.value;
+  users[idx].profile.salaryAllowance = pf_salaryAllowance.value;
+  users[idx].profile.salaryBonus = pf_salaryBonus.value;
+  users[idx].profile.salaryNote = pf_salaryNote.value.trim();
+  users[idx].profile.address = pf_address.value.trim();
+  users[idx].profile.documents = pf_documents.value.trim();
+  if (profilePicDataURL){
+    users[idx].profile.profilePic = profilePicDataURL;
+  }
+
+  saveUsers(users);
+  pfMsg.style.display = "block";
+  pfMsg.textContent = "Profile saved successfully.";
+  setSession(users[idx].email);
+
+  setTimeout(() => {
+    pfMsg.style.display = "none";
+  }, 1000);
+};
+
+function escapeHTML(s){
+  return String(s ?? "")
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+function escapeAttr(s){
+  return escapeHTML(s).replaceAll("`","&#096;");
+}
+
+ensureSeedAdmin();
+window.addEventListener("hashchange", routeAfterLogin);
+routeAfterLogin();
+</script>
+</body>
+</html>
